@@ -169,7 +169,7 @@ int test_read_before_mount() {
   printf("running %s: ", __func__);
 
   uint8_t buf[SIZE];
-  if (mdadm_read(0, SIZE, buf) != -1) {
+  if (mdadm_read(0, SIZE, buf) != -3) {
     printf("failed: read should fail on an umounted system but it did not.\n");
     return 0;
   }
@@ -198,12 +198,12 @@ int test_read_invalid_parameters() {
   }
 
   uint8_t buf2[1025];
-  if (mdadm_read(0, sizeof(buf2), buf2) != -1) {
+  if (mdadm_read(0, sizeof(buf2), buf2) != -2) {
     printf("failed: read should fail on larger than 1024-byte I/O sizes but it did not.\n");
     goto out;
   }
 
-  if (mdadm_read(0, SIZE, NULL) != -1) {
+  if (mdadm_read(0, SIZE, NULL) != -4) {
     printf("failed: read should fail when passed a NULL pointer and non-zero length but it did not.\n");
     goto out;
   }
@@ -433,7 +433,7 @@ int test_write_before_mount() {
   printf("running %s: ", __func__);
 
   uint8_t buf[SIZE];
-  if (mdadm_write(0, SIZE, buf) != -1) {
+  if (mdadm_write(0, SIZE, buf) != -3) {
     printf("failed: write should fail on an umounted system but it did not.\n");
     return 0;
   }
@@ -444,9 +444,9 @@ int test_write_before_mount() {
 int test_write_before_permission(){
 
   printf("running %s: ", __func__);
-
+  mdadm_mount();
   uint8_t buf[SIZE];
-  if (mdadm_write(0, SIZE, buf) != -1) {
+  if (mdadm_write(0, SIZE, buf) != -5) {
     printf("failed: write should fail when permssion is not granted.\n");
     return 0;
   }
@@ -476,13 +476,13 @@ int test_write_invalid_parameters() {
     goto out;
   }
 
-  uint8_t buf2[2049];
-  if (mdadm_write(0, sizeof(buf2), buf2) != -1) {
-    printf("failed: write should fail on larger than 2048-byte I/O sizes but it did not.\n");
+  uint8_t buf2[1025];
+  if (mdadm_write(0, sizeof(buf2), buf2) != -2) {
+    printf("failed: write should fail on larger than 1024-byte I/O sizes but it did not.\n");
     goto out;
   }
 
-  if (mdadm_write(0, SIZE, NULL) != -1) {
+  if (mdadm_write(0, SIZE, NULL) != -4) {
     printf("failed: write should fail when passed a NULL pointer and non-zero length but it did not.\n");
     goto out;
   }
